@@ -1,24 +1,37 @@
 type Account @entity {
   id: ID!
+  nftsOwned: [Nft!]! @derivedFrom (field:"account")
+  ogCardsOwned: [OG!]! @derivedFrom (field:"account")
 }
 
 type Nft @entity {
   id: ID!
+  account: Account
 }
 
 type Contract @entity {
   id: ID!
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
 }
 
-type Traits @entity {
+type Trait @entity {
   id: ID!
 }
 
 type UpgradeEvent @entity {
   id: ID!
 }
+
 type SaleEvent @entity {
   id: ID!
+  ogCards: OG
+}
+
+type RefundEvent @entity {
+  id: ID!
+  buyer: Account
 }
 
 type Alpha @entity {
@@ -27,6 +40,10 @@ type Alpha @entity {
 
 type OG @entity {
   id: ID!
+  currentOwner: Bytes
+  saleEvents: [SaleEvent!]! @derivedFrom (field:"ogCards")
+  nft: Nft
+  account: Account
 }
 
 type Founder @entity {
