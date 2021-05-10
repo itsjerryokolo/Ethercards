@@ -14,31 +14,17 @@ dataSources:
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - ALPHA_Ordered
-        - Approval
-        - ApprovalForAll
-        - COMMON_Ordered
-        - ControllerSet
-        - HashesSet
-        - OG_Ordered
-        - OracleSet
-        - OwnershipTransferred
-        - Paused
-        - PresaleClosed
-        - ProcessRandom
-        - RandomSet
-        - Refund
-        - Resolution
-        - SaleSet
-        - TraitSet
-        - TraitsAlreadyClaimed
-        - TraitsClaimed
-        - Transfer
-        - Unpaused
-        - Upgrade
-        - UpgradeToAlpha
-        - UpgradeToOG
-        - WheresWallet
+        - Account
+        - Nft
+        - Contract
+        - Trait
+        - UpgradeEvent
+        - SaleEvent
+        - OG
+        - Founder
+        - Alpha
+        - RefundEvent
+        - Transaction
       abis:
         - name: Ethercards
           file: ./abis/Ethercards.json
