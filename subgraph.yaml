@@ -1,0 +1,96 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Ethercards
+    network: mainnet
+    source:
+      address: "0x97CA7FE0b0288f5EB85F386FeD876618FB9b8Ab8"
+      abi: Ethercards
+      startBlock: 12057875
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ALPHA_Ordered
+        - Approval
+        - ApprovalForAll
+        - COMMON_Ordered
+        - ControllerSet
+        - HashesSet
+        - OG_Ordered
+        - OracleSet
+        - OwnershipTransferred
+        - Paused
+        - PresaleClosed
+        - ProcessRandom
+        - RandomSet
+        - Refund
+        - Resolution
+        - SaleSet
+        - TraitSet
+        - TraitsAlreadyClaimed
+        - TraitsClaimed
+        - Transfer
+        - Unpaused
+        - Upgrade
+        - UpgradeToAlpha
+        - UpgradeToOG
+        - WheresWallet
+      abis:
+        - name: Ethercards
+          file: ./abis/Ethercards.json
+      eventHandlers:
+        - event: ALPHA_Ordered(address,uint256,uint256)
+          handler: handleALPHA_Ordered
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: COMMON_Ordered(address,uint256,uint256)
+          handler: handleCOMMON_Ordered
+        - event: ControllerSet(address)
+          handler: handleControllerSet
+        - event: HashesSet()
+          handler: handleHashesSet
+        - event: OG_Ordered(address,uint256,uint256)
+          handler: handleOG_Ordered
+        - event: OracleSet(address)
+          handler: handleOracleSet
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Paused(address)
+          handler: handlePaused
+        - event: PresaleClosed()
+          handler: handlePresaleClosed
+        - event: ProcessRandom()
+          handler: handleProcessRandom
+        - event: RandomSet(address)
+          handler: handleRandomSet
+        - event: Refund(address,uint256,uint256,uint256)
+          handler: handleRefund
+        - event: Resolution(uint256,uint256)
+          handler: handleResolution
+        - event: SaleSet(uint256,uint256)
+          handler: handleSaleSet
+        - event: TraitSet(uint256,uint256,uint256)
+          handler: handleTraitSet
+        - event: TraitsAlreadyClaimed(uint256)
+          handler: handleTraitsAlreadyClaimed
+        - event: TraitsClaimed(uint256,uint256)
+          handler: handleTraitsClaimed
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: Upgrade(uint256,uint256)
+          handler: handleUpgrade
+        - event: UpgradeToAlpha(uint256,uint256)
+          handler: handleUpgradeToAlpha
+        - event: UpgradeToOG(uint256,uint256)
+          handler: handleUpgradeToOG
+        - event: WheresWallet(address)
+          handler: handleWheresWallet
+      file: ./src/mapping.ts

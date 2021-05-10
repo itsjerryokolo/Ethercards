@@ -1,0 +1,38 @@
+type Account @entity {
+  id: ID!
+}
+
+type Nft @entity {
+  id: ID!
+}
+
+type Contract @entity {
+  id: ID!
+}
+
+type Traits @entity {
+  id: ID!
+}
+
+type UpgradeEvent @entity {
+  id: ID!
+}
+type SaleEvent @entity {
+  id: ID!
+}
+
+type Alpha @entity {
+  id: ID!
+}
+
+type OG @entity {
+  id: ID!
+}
+
+type Founder @entity {
+  id: ID!
+}
+
+type Transaction @entity {
+  id: ID!
+}
