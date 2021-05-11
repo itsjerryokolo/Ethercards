@@ -331,7 +331,7 @@ export function handleTransfer(event: Transfer): void {
 
   transferEvent.account = account.id
   transferEvent.sender = event.params.from
-  transferEvent.sender = event.params.to
+  transferEvent.receiver = event.params.to
   transferEvent.nftTransfered = nft.id
 
 
