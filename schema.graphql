@@ -1,12 +1,22 @@
 type Account @entity {
+  "Ethereum Address"
   id: ID!
-  nftsOwned: [Nft!]! @derivedFrom (field:"account")
+  nftsOwned: [Nft!]! @derivedFrom (field:"deployer")
   ogCardsOwned: [OG!]! @derivedFrom (field:"account")
+  founderCardsOwned: [Founder!]! @derivedFrom (field:"account")
+  alphaCardsOwned: [Alpha!]! @derivedFrom (field:"account")
+  purchaseReceipts: [SaleEvent!]! @derivedFrom (field: "buyer")
+  refundReceipts: [RefundEvent!]! @derivedFrom (field: "buyer")
+  transactions: [Transaction!]! @derivedFrom (field: "account")
 }
 
 type Nft @entity {
   id: ID!
-  account: Account
+  deployer: Account
+  currentOwner: Bytes
+  ogCards: OG
+  founderCards: Founder
+  alphaCards: Alpha
 }
 
 type Contract @entity {
@@ -16,8 +26,43 @@ type Contract @entity {
   totalSupply: BigInt!
 }
 
+type Alpha @entity {
+  id: ID!
+  currentOwner: Bytes
+  tokenURI: String
+  traits: Trait
+  saleEvents: [SaleEvent!]! @derivedFrom (field:"alphaCards")
+  nft: Nft
+  account: Account
+  transaction: Transaction
+}
+
+type OG @entity {
+  id: ID!
+  currentOwner: Bytes
+  tokenURI: String
+  traits: Trait
+  saleEvents: [SaleEvent!]! @derivedFrom (field:"ogCards")
+  nft: Nft
+  account: Account
+  transaction: Transaction
+}
+
+type Founder @entity {
+  id: ID!
+  currentOwner: Bytes
+  tokenURI: String
+  traits: Trait
+  saleEvents: [SaleEvent!]! @derivedFrom (field:"founderCards")
+  nft: Nft
+  account: Account
+  transaction: Transaction
+}
+
 type Trait @entity {
   id: ID!
+  nft: Nft
+  traitsClaimed: BigInt!
 }
 
 type UpgradeEvent @entity {
@@ -26,30 +71,46 @@ type UpgradeEvent @entity {
 
 type SaleEvent @entity {
   id: ID!
+  buyer: Account
+  amount: BigInt
   ogCards: OG
+  founderCards: Founder
+  alphaCards: Alpha
+  nft: Nft
+  transaction: Transaction
 }
 
 type RefundEvent @entity {
   id: ID!
   buyer: Account
-}
-
-type Alpha @entity {
-  id: ID!
-}
-
-type OG @entity {
-  id: ID!
-  currentOwner: Bytes
-  saleEvents: [SaleEvent!]! @derivedFrom (field:"ogCards")
+  sent: BigInt
+  refund: BigInt
+  purchased: BigInt
   nft: Nft
   account: Account
+  transaction: Transaction
 }
 
-type Founder @entity {
+type TransferEvent @entity{
   id: ID!
+  sender: Bytes
+  receiver: Bytes
+  account: Account
+  nftTransfered: Nft
+  transaction: Transaction
 }
 
 type Transaction @entity {
   id: ID!
+  founderCards: Founder
+  nft: Nft
+  saleEvent: SaleEvent
+  alphaCards: Alpha
+  ogCards: OG
+  account: Account
+  refundEvent: RefundEvent
+  transferEvent: TransferEvent
+  hash: Bytes!
+  timestamp: BigInt!
+  block: BigInt!
 }
