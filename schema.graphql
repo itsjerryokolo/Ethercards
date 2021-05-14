@@ -5,6 +5,7 @@ type Account @entity {
   ogCardsOwned: [OG!]! @derivedFrom (field:"account")
   founderCardsOwned: [Founder!]! @derivedFrom (field:"account")
   alphaCardsOwned: [Alpha!]! @derivedFrom (field:"account")
+  transferReceipts: [TransferEvent!]! @derivedFrom (field: "account")
   purchaseReceipts: [SaleEvent!]! @derivedFrom (field: "buyer")
   refundReceipts: [RefundEvent!]! @derivedFrom (field: "buyer")
   transactions: [Transaction!]! @derivedFrom (field: "account")
@@ -62,11 +63,17 @@ type Founder @entity {
 type Trait @entity {
   id: ID!
   nft: Nft
-  traitsClaimed: BigInt!
+  traits: BigInt
+  traitsClaimed: BigInt
+  isClaimed: BigInt
+  fullTraits: BigInt
 }
 
 type UpgradeEvent @entity {
   id: ID!
+  upgradeToAlpha: BigInt
+  upgradeToOG: BigInt
+  transaction: Transaction
 }
 
 type SaleEvent @entity {
@@ -93,10 +100,14 @@ type RefundEvent @entity {
 
 type TransferEvent @entity{
   id: ID!
+  "Will display ZERO_ADDRESS for newly minted NFTs"
   sender: Bytes
+  "Receipient of NFT"
   receiver: Bytes
   account: Account
+  "NFT transfered or newly minted"
   nftTransfered: Nft
+  "Transaction data"
   transaction: Transaction
 }
 
@@ -111,6 +122,8 @@ type Transaction @entity {
   refundEvent: RefundEvent
   transferEvent: TransferEvent
   hash: Bytes!
+  upgradeToAlpha: UpgradeEvent
+  upgradeToOG: UpgradeEvent
   timestamp: BigInt!
   block: BigInt!
 }
