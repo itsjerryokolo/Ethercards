@@ -5,10 +5,10 @@ type Account @entity {
   ogCardsOwned: [OG!]! @derivedFrom (field:"account")
   founderCardsOwned: [Founder!]! @derivedFrom (field:"account")
   alphaCardsOwned: [Alpha!]! @derivedFrom (field:"account")
-  transferReceipts: [TransferEvent!]! @derivedFrom (field: "account")
-  purchaseReceipts: [SaleEvent!]! @derivedFrom (field: "buyer")
-  refundReceipts: [RefundEvent!]! @derivedFrom (field: "buyer")
-  transactions: [Transaction!]! @derivedFrom (field: "account")
+  transfers: [TransferEvent!]! @derivedFrom (field: "account")
+  purchases: [SaleEvent!]! @derivedFrom (field: "buyer")
+  refunds: [RefundEvent!]! @derivedFrom (field: "buyer")
+  transactionReceipts: [Transaction!]! @derivedFrom (field: "account")
 }
 
 type Nft @entity {
@@ -18,6 +18,7 @@ type Nft @entity {
   ogCards: OG
   founderCards: Founder
   alphaCards: Alpha
+  transaction: Transaction
 }
 
 type Contract @entity {
@@ -29,33 +30,36 @@ type Contract @entity {
 
 type Alpha @entity {
   id: ID!
+  "All Alpha cards"
+  nft: [Nft!]! @derivedFrom (field:"alphaCards")
   currentOwner: Bytes
   tokenURI: String
   traits: Trait
-  saleEvents: [SaleEvent!]! @derivedFrom (field:"alphaCards")
-  nft: Nft
+  saleEvent: SaleEvent
   account: Account
   transaction: Transaction
 }
 
 type OG @entity {
   id: ID!
+  "All OG cards"
+  nft: [Nft!]! @derivedFrom (field:"ogCards")
   currentOwner: Bytes
   tokenURI: String
   traits: Trait
-  saleEvents: [SaleEvent!]! @derivedFrom (field:"ogCards")
-  nft: Nft
+  saleEvent: SaleEvent
   account: Account
   transaction: Transaction
 }
 
 type Founder @entity {
   id: ID!
+  "All Founder cards"
+  nft: [Nft!]! @derivedFrom (field:"founderCards")
   currentOwner: Bytes
   tokenURI: String
   traits: Trait
-  saleEvents: [SaleEvent!]! @derivedFrom (field:"founderCards")
-  nft: Nft
+  saleEvent: SaleEvent
   account: Account
   transaction: Transaction
 }
@@ -69,13 +73,6 @@ type Trait @entity {
   fullTraits: BigInt
 }
 
-type UpgradeEvent @entity {
-  id: ID!
-  upgradeToAlpha: BigInt
-  upgradeToOG: BigInt
-  transaction: Transaction
-}
-
 type SaleEvent @entity {
   id: ID!
   buyer: Account
@@ -84,6 +81,20 @@ type SaleEvent @entity {
   founderCards: Founder
   alphaCards: Alpha
   nft: Nft
+  transaction: Transaction
+}
+
+type TransferEvent @entity{
+  "Token ID"
+  id: ID!
+  "Will display ZERO_ADDRESS for newly minted NFTs"
+  sender: Bytes
+  "Receipient of NFT"
+  receiver: Bytes
+  account: Account 
+  "NFT transfered or newly minted"
+  nftTransfered: Nft
+  "Transaction data"
   transaction: Transaction
 }
 
@@ -98,32 +109,26 @@ type RefundEvent @entity {
   transaction: Transaction
 }
 
-type TransferEvent @entity{
+type UpgradeEvent @entity {
   id: ID!
-  "Will display ZERO_ADDRESS for newly minted NFTs"
-  sender: Bytes
-  "Receipient of NFT"
-  receiver: Bytes
-  account: Account
-  "NFT transfered or newly minted"
-  nftTransfered: Nft
-  "Transaction data"
+  upgradeToAlpha: BigInt
+  upgradeToOG: BigInt
   transaction: Transaction
 }
 
 type Transaction @entity {
   id: ID!
-  founderCards: Founder
   nft: Nft
-  saleEvent: SaleEvent
+  founderCards: Founder
   alphaCards: Alpha
   ogCards: OG
   account: Account
+  saleEvent: SaleEvent
   refundEvent: RefundEvent
   transferEvent: TransferEvent
-  hash: Bytes!
   upgradeToAlpha: UpgradeEvent
   upgradeToOG: UpgradeEvent
+  hash: Bytes!
   timestamp: BigInt!
   block: BigInt!
 }
