@@ -23,9 +23,9 @@ import {
   Transfer,
   Unpaused,
   Upgrade,
-  UpgradeToAlpha,
   UpgradeToOG,
-  WheresWallet
+  WheresWallet,
+  UpgradeToAlpha
 } from "../generated/Ethercards/Ethercards"
 import {
    Account,
@@ -78,6 +78,8 @@ export function handleALPHA_Ordered(event: ALPHA_Ordered): void {
 
   saleEvent.buyer = account.id
   saleEvent.amount = event.params.price_paid
+  saleEvent.alphaCards = alpha.id
+
 
 
   alpha.currentOwner = ethercards.ownerOf(event.params.tokenID)
@@ -136,6 +138,8 @@ export function handleOG_Ordered(event: OG_Ordered): void {
 
   saleEvent.buyer = account.id
   saleEvent.amount = event.params.price_paid
+  saleEvent.ogCards = og.id
+
 
 
   transaction.hash = event.transaction.hash
@@ -193,6 +197,7 @@ export function handleCOMMON_Ordered(event: COMMON_Ordered): void {
 
   
   saleEvent.buyer = account.id
+  saleEvent.founderCards = founder.id
   saleEvent.amount = event.params.price_paid
 
   founder.currentOwner = ethercards.ownerOf(event.params.tokenID)
@@ -222,10 +227,6 @@ export function handleCOMMON_Ordered(event: COMMON_Ordered): void {
 
 
 
-  saleEvent.buyer = account.id
-  saleEvent.amount = event.params.price_paid
-
-
   account.save()
   founder.save()
   nft.save()
@@ -236,13 +237,13 @@ export function handleCOMMON_Ordered(event: COMMON_Ordered): void {
 
 
 export function handleRefund(event: Refund): void {
-  let refundEvent = RefundEvent.load(event.params.buyer.toString())
+  let refundEvent = RefundEvent.load(event.params.buyer.toHexString())
   let account = Account.load(event.params.buyer.toHexString())
   let transaction = Transaction.load(event.transaction.hash.toHexString())
 
 
   if(refundEvent == null){
-    refundEvent = new RefundEvent(event.params.buyer.toString())
+    refundEvent = new RefundEvent(event.params.buyer.toHexString())
   }
   if(account == null){
     account = new Account(event.params.buyer.toHexString())
@@ -268,7 +269,26 @@ export function handleRefund(event: Refund): void {
   refundEvent.save()
 }
 
-export function handleTraitSet(event: TraitSet): void {}
+export function handleTraitSet(event: TraitSet): void {
+  let trait = Trait.load(event.params.tokenId.toString())
+  let nft = Nft.load(event.params.tokenId.toString())
+
+
+  if(trait == null){
+    trait = new Trait(event.params.tokenId.toString())
+  }
+  if(nft == null){
+    nft = new Nft(event.params.tokenId.toString())
+  }
+
+  trait.traits = event.params.traits
+
+
+
+  
+  nft.save()
+  trait.save()
+}
 
 export function handleUpgrade(event: Upgrade): void {
   let upgradeEvent = UpgradeEvent.load(event.transaction.hash.toHexString())
@@ -281,11 +301,86 @@ export function handleUpgrade(event: Upgrade): void {
 }
 
 export function handleUpgradeToAlpha(event: UpgradeToAlpha): void {
+  let upgradeToAlpha = UpgradeEvent.load(event.params.tokenId.toString())
+  let transaction = Transaction.load(event.transaction.hash.toHexString())
+
+  if (upgradeToAlpha == null){
+    upgradeToAlpha = new UpgradeEvent(event.params.tokenId.toString())
+  }
+  if(transaction == null){
+    transaction = new Transaction(event.transaction.hash.toHexString())
+  }
+
+  upgradeToAlpha.upgradeToAlpha = event.params.pos
+  upgradeToAlpha.transaction = transaction.id
+
+
+  transaction.hash = event.transaction.hash
+  transaction.timestamp = event.block.timestamp
+  transaction.block = event.block.number
+  transaction.upgradeToAlpha = upgradeToAlpha.id
+
+
+
+  upgradeToAlpha.save()
+  transaction.save()
 }
 
-export function handleUpgradeToOG(event: UpgradeToOG): void {}
 
-export function handleTraitsAlreadyClaimed(event: TraitsAlreadyClaimed): void {}
+
+export function handleUpgradeToOG(event: UpgradeToOG): void {
+  let upgradeToOG = UpgradeEvent.load(event.params.tokenId.toString())
+  let transaction = Transaction.load(event.transaction.hash.toHexString())
+
+  if (upgradeToOG == null){
+    upgradeToOG = new UpgradeEvent(event.params.tokenId.toString())
+  }
+  if(transaction == null){
+    transaction = new Transaction(event.transaction.hash.toHexString())
+  }
+
+  upgradeToOG.upgradeToAlpha = event.params.pos
+  upgradeToOG.transaction = transaction.id
+
+
+  transaction.hash = event.transaction.hash
+  transaction.timestamp = event.block.timestamp
+  transaction.block = event.block.number
+  transaction.upgradeToOG = upgradeToOG.id
+  
+
+
+  upgradeToOG.save()
+  transaction.save()
+
+
+
+}
+
+
+
+export function handleTraitsAlreadyClaimed(event: TraitsAlreadyClaimed): void {
+  let trait = Trait.load(event.params.tokenID.toString())
+  let nft = Nft.load(event.params.tokenID.toString())
+  let ethercards = Ethercards.bind(event.address)
+
+
+  if(trait == null){
+    trait = new Trait(event.params.tokenID.toString())
+  }
+  if(nft == null){
+    nft = new Nft(event.params.tokenID.toString())
+  }
+
+  trait.traitsClaimed = event.params.tokenID
+  trait.fullTraits = ethercards.fullTrait(BigInt.fromString(nft.id));
+
+
+
+  
+  nft.save()
+  trait.save()
+}
 
 export function handleTraitsClaimed(event: TraitsClaimed): void {
   let trait = Trait.load(event.params.tokenID.toString())
@@ -299,8 +394,7 @@ export function handleTraitsClaimed(event: TraitsClaimed): void {
     nft = new Nft(event.params.tokenID.toString())
   }
 
-  trait.traitsClaimed = event.params.traits
-
+  trait.isClaimed = event.params.traits
 
 
   
@@ -311,12 +405,12 @@ export function handleTraitsClaimed(event: TraitsClaimed): void {
 export function handleTransfer(event: Transfer): void {
   let transferEvent = TransferEvent.load(event.params.tokenId.toString())
   let nft = Nft.load(event.params.tokenId.toString())
-  let account = Account.load(event.params.from.toHexString())
+  let account = Account.load(event.params.to.toHexString())
   let transaction = Transaction.load(event.transaction.hash.toHexString())
 
 
   if(account == null){
-    account = new Account(event.params.from.toHexString())
+    account = new Account(event.params.to.toHexString())
   }
   if(nft == null){
     nft = new Nft(event.params.tokenId.toString())
