@@ -7,10 +7,14 @@
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ itsjerryokolo/ethercards",
     "create-local": "graph create --node http://localhost:8020/ itsjerryokolo/ethercards",
     "remove-local": "graph remove --node http://localhost:8020/ itsjerryokolo/ethercards",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 itsjerryokolo/ethercards"
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 itsjerryokolo/ethercards",
+    "test": "graph build && ./matchstick Ethercards"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.20.0",
-    "@graphprotocol/graph-ts": "0.20.0"
+    "@graphprotocol/graph-ts": "^0.22.1",
+    "matchstick-as": "^0.1.5"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.22.4"
   }
 }

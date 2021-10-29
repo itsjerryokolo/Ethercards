@@ -1,14 +1,14 @@
 type Account @entity {
   "Ethereum Address"
   id: ID!
-  nftsOwned: [Nft!]! @derivedFrom (field:"deployer")
-  ogCardsOwned: [OG!]! @derivedFrom (field:"account")
-  founderCardsOwned: [Founder!]! @derivedFrom (field:"account")
-  alphaCardsOwned: [Alpha!]! @derivedFrom (field:"account")
-  transfers: [TransferEvent!]! @derivedFrom (field: "account")
-  purchases: [SaleEvent!]! @derivedFrom (field: "buyer")
-  refunds: [RefundEvent!]! @derivedFrom (field: "buyer")
-  transactionReceipts: [Transaction!]! @derivedFrom (field: "account")
+  nftsOwned: [Nft!]! @derivedFrom(field: "deployer")
+  ogCardsOwned: [OG!]! @derivedFrom(field: "account")
+  founderCardsOwned: [Founder!]! @derivedFrom(field: "account")
+  alphaCardsOwned: [Alpha!]! @derivedFrom(field: "account")
+  transfers: [TransferEvent!]! @derivedFrom(field: "account")
+  purchases: [SaleEvent!]! @derivedFrom(field: "buyer")
+  refunds: [RefundEvent!]! @derivedFrom(field: "buyer")
+  transactionReceipts: [Transaction!]! @derivedFrom(field: "account")
 }
 
 type Nft @entity {
@@ -31,7 +31,7 @@ type Contract @entity {
 type Alpha @entity {
   id: ID!
   "All Alpha cards"
-  nft: [Nft!]! @derivedFrom (field:"alphaCards")
+  nft: [Nft!]! @derivedFrom(field: "alphaCards")
   currentOwner: Bytes
   tokenURI: String
   traits: Trait
@@ -43,7 +43,7 @@ type Alpha @entity {
 type OG @entity {
   id: ID!
   "All OG cards"
-  nft: [Nft!]! @derivedFrom (field:"ogCards")
+  nft: [Nft!]! @derivedFrom(field: "ogCards")
   currentOwner: Bytes
   tokenURI: String
   traits: Trait
@@ -55,7 +55,7 @@ type OG @entity {
 type Founder @entity {
   id: ID!
   "All Founder cards"
-  nft: [Nft!]! @derivedFrom (field:"founderCards")
+  nft: [Nft!]! @derivedFrom(field: "founderCards")
   currentOwner: Bytes
   tokenURI: String
   traits: Trait
@@ -81,20 +81,24 @@ type SaleEvent @entity {
   founderCards: Founder
   alphaCards: Alpha
   nft: Nft
+  saleEvent: SaleEvent
+  transferEvent: TransferEvent
   transaction: Transaction
 }
 
-type TransferEvent @entity{
+type TransferEvent @entity {
   "Token ID"
   id: ID!
   "Will display ZERO_ADDRESS for newly minted NFTs"
   sender: Bytes
   "Receipient of NFT"
   receiver: Bytes
-  account: Account 
+  account: Account
   "NFT transfered or newly minted"
   nftTransfered: Nft
   "Transaction data"
+  saleEvent: SaleEvent
+  transferEvent: TransferEvent
   transaction: Transaction
 }
 
@@ -128,6 +132,7 @@ type Transaction @entity {
   transferEvent: TransferEvent
   upgradeToAlpha: UpgradeEvent
   upgradeToOG: UpgradeEvent
+  transaction: Transaction
   hash: Bytes!
   timestamp: BigInt!
   block: BigInt!
